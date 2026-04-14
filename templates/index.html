@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Attendance System</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .box {
+            border: 2px solid #ccc;
+            padding: 20px;
+            width: 300px;
+            margin: auto;
+            border-radius: 10px;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Smart Attendance System 🎓</h1>
+
+    <div class="box">
+        <input type="file" id="imageInput"><br>
+        <button onclick="uploadImage()">Mark Attendance</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function uploadImage() {
+            const fileInput = document.getElementById("imageInput");
+            const resultDiv = document.getElementById("result");
+
+            if (!fileInput.files.length) {
+                alert("Please select an image");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("image", fileInput.files[0]);
+
+            try {
+                const response = await fetch("http://localhost:5000/recognize", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.name) {
+                    resultDiv.innerHTML = "✅ Attendance Marked: " + data.name;
+                } else if (data.message) {
+                    resultDiv.innerHTML = "⚠️ " + data.message;
+                } else {
+                    resultDiv.innerHTML = "❌ Error: " + data.error;
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML = "❌ Server Error";
+            }
+        }
+    </script>
+
+</body>
+</html>
