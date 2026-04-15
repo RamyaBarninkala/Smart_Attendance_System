@@ -7,23 +7,51 @@
             font-family: Arial;
             text-align: center;
             margin-top: 50px;
+            background-color: #f4f6f8;
         }
+
+        h1 {
+            color: #333;
+        }
+
         .box {
-            border: 2px solid #ccc;
-            padding: 20px;
-            width: 300px;
+            border: 2px solid #ddd;
+            padding: 25px;
+            width: 320px;
             margin: auto;
-            border-radius: 10px;
+            border-radius: 12px;
+            background-color: #fff;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
         }
-        button {
-            padding: 10px;
+
+        input[type="file"] {
             margin-top: 10px;
-            cursor: pointer;
         }
+
+        button {
+            padding: 10px 15px;
+            margin-top: 15px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
         #result {
             margin-top: 20px;
             font-weight: bold;
-            color: green;
+        }
+
+        img {
+            margin-top: 15px;
+            max-width: 100%;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -32,27 +60,47 @@
     <h1>Smart Attendance System 🎓</h1>
 
     <div class="box">
-        <input type="file" id="imageInput"><br>
+        <input type="file" id="imageInput" accept="image/*"><br>
+
         <button onclick="uploadImage()">Mark Attendance</button>
 
+        <!-- Preview Image -->
+        <div id="preview"></div>
+
+        <!-- Result -->
         <div id="result"></div>
     </div>
 
     <script>
-        async function uploadImage() {
-            const fileInput = document.getElementById("imageInput");
-            const resultDiv = document.getElementById("result");
+        const fileInput = document.getElementById("imageInput");
+        const previewDiv = document.getElementById("preview");
+        const resultDiv = document.getElementById("result");
 
+        // Show image preview
+        fileInput.addEventListener("change", () => {
+            previewDiv.innerHTML = "";
+            const file = fileInput.files[0];
+
+            if (file) {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                previewDiv.appendChild(img);
+            }
+        });
+
+        async function uploadImage() {
             if (!fileInput.files.length) {
                 alert("Please select an image");
                 return;
             }
 
+            resultDiv.innerHTML = "⏳ Processing...";
+
             const formData = new FormData();
             formData.append("image", fileInput.files[0]);
 
             try {
-                const response = await fetch("http://localhost:5000/recognize", {
+                const response = await fetch("/recognize", {   // ✅ FIXED
                     method: "POST",
                     body: formData
                 });
@@ -60,14 +108,18 @@
                 const data = await response.json();
 
                 if (data.name) {
+                    resultDiv.style.color = "green";
                     resultDiv.innerHTML = "✅ Attendance Marked: " + data.name;
                 } else if (data.message) {
+                    resultDiv.style.color = "orange";
                     resultDiv.innerHTML = "⚠️ " + data.message;
                 } else {
+                    resultDiv.style.color = "red";
                     resultDiv.innerHTML = "❌ Error: " + data.error;
                 }
 
             } catch (error) {
+                resultDiv.style.color = "red";
                 resultDiv.innerHTML = "❌ Server Error";
             }
         }
