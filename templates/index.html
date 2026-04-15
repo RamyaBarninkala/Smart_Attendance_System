@@ -100,10 +100,13 @@
             formData.append("image", fileInput.files[0]);
 
             try {
-                const response = await fetch("/recognize", {   // ✅ FIXED
+                const response = await fetch(window.location.origin +"/recognize", {   // ✅ FIXED
                     method: "POST",
                     body: formData
                 });
+                if (!response.ok) {
+                   throw new Error("Server returned error");
+                }
 
                 const data = await response.json();
 
