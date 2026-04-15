@@ -3,7 +3,6 @@ import boto3
 
 app = Flask(__name__)
 
-# ✅ Only region (NO KEYS)
 AWS_REGION = "us-east-1"
 
 # AWS Clients (no credentials here)
@@ -12,10 +11,12 @@ dynamodb = boto3.client('dynamodb', region_name=AWS_REGION)
 
 COLLECTION_ID = "students"
 TABLE_NAME = "studentsCollection"
+from flask import render_template
 
 @app.route('/')
 def home():
-    return "Smart Attendance System Running 🚀"
+    return render_template('index.html')  
+
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
