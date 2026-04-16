@@ -5,18 +5,15 @@ app = Flask(__name__)
 
 AWS_REGION = "us-east-1"
 
-# AWS Clients (no credentials here)
 rekognition = boto3.client('rekognition', region_name=AWS_REGION)
 dynamodb = boto3.client('dynamodb', region_name=AWS_REGION)
 
 COLLECTION_ID = "students"
 TABLE_NAME = "studentsCollection"
-from flask import render_template
 
 @app.route('/')
 def home():
-    return render_template('index.html')  
-
+    return render_template('index.html')
 
 @app.route('/recognize', methods=['POST'])
 def recognize():
